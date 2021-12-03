@@ -452,10 +452,6 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		}
 
 		erasureInfo := latestMeta.Erasure
-		bp := er.bp
-		if erasureInfo.BlockSize == blockSizeV1 {
-			bp = er.bpOld
-		}
 		for partIndex := 0; partIndex < len(latestMeta.Parts); partIndex++ {
 			partSize := latestMeta.Parts[partIndex].Size
 			partActualSize := latestMeta.Parts[partIndex].ActualSize
@@ -486,7 +482,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 						tillOffset, DefaultBitrotAlgorithm, erasure.ShardSize())
 				}
 			}
-			err = erasure.Heal(ctx, readers, writers, partSize, bp)
+			err = erasure.Heal(ctx, writers, readers, partSize)
 			closeBitrotReaders(readers)
 			closeBitrotWriters(writers)
 			if err != nil {

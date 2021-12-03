@@ -37,7 +37,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.0.6
 	github.com/klauspost/pgzip v1.2.5
 	github.com/klauspost/readahead v1.3.1
-	github.com/klauspost/reedsolomon v1.9.13
+	github.com/klauspost/reedsolomon v1.9.15
 	github.com/lib/pq v1.9.0
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/miekg/dns v1.1.35
