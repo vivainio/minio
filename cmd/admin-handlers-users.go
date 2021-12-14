@@ -1090,7 +1090,8 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 	r.Header.Set("delimiter", SlashSeparator)
 
 	// Check if we are asked to return prefix usage
-	enablePrefixUsage := r.Form.Get("prefix-usage") == "true"
+	// enablePrefixUsage := r.Form.Get("prefix-usage") == "true"
+	enablePrefixUsage := false
 
 	isAllowedAccess := func(bucketName string) (rd, wr bool) {
 		if globalIAMSys.IsAllowed(iampolicy.Args{
