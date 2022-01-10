@@ -829,7 +829,7 @@ func isObjectDangling(metaArr []FileInfo, errs []error, dataErrs []error) (valid
 	for _, readErr := range errs {
 		if errors.Is(readErr, errFileNotFound) || errors.Is(readErr, errFileVersionNotFound) {
 			notFoundErasureMeta++
-		} else if errors.Is(readErr, errCorruptedFormat) {
+		} else if errors.Is(readErr, errFileCorrupt) {
 			corruptedErasureMeta++
 		}
 	}
@@ -857,16 +857,16 @@ func isObjectDangling(metaArr []FileInfo, errs []error, dataErrs []error) (valid
 		break
 	}
 
+	if !validMeta.IsValid() {
+		// We couldn't find any valid meta we are indeed corrupted, return false.
+		return validMeta, false
+	}
+
 	if validMeta.Deleted || validMeta.IsRemote() {
 		// notFoundParts is ignored since a
 		// - delete marker does not have any parts
 		// - transition status of complete has no parts
 		return validMeta, corruptedErasureMeta+notFoundErasureMeta > len(errs)/2
-	}
-
-	// We couldn't find any valid meta we are indeed corrupted, return true right away.
-	if validMeta.Erasure.DataBlocks == 0 {
-		return validMeta, true
 	}
 
 	// We have valid meta, now verify if we have enough files with parity blocks.
