@@ -223,7 +223,8 @@ func (er *erasureObjects) healErasureSet(ctx context.Context, buckets []BucketIn
 			}
 			fivs, err := entry.fileInfoVersions(bucket.Name)
 			if err != nil {
-				logger.LogIf(ctx, err)
+				tracker.ItemsFailed++
+				logger.LogIf(ctx, fmt.Errorf("unable to get object info %s/%s: %w", bucket.Name, entry.name, err))
 				return
 			}
 			waitForLowHTTPReq(globalHealConfig.IOCount, globalHealConfig.Sleep)
@@ -234,7 +235,11 @@ func (er *erasureObjects) healErasureSet(ctx context.Context, buckets []BucketIn
 						// If not deleted, assume they failed.
 						tracker.ItemsFailed++
 						tracker.BytesFailed += uint64(version.Size)
-						logger.LogIf(ctx, err)
+						if version.VersionID != "" {
+							logger.LogIf(ctx, fmt.Errorf("unable to get object info %s/%s-v(%s): %w", bucket.Name, version.Name, version.VersionID, err))
+						} else {
+							logger.LogIf(ctx, fmt.Errorf("unable to get object info %s/%s: %w", bucket.Name, version.Name, err))
+						}
 					}
 				} else {
 					tracker.ItemsHealed++
