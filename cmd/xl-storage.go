@@ -1636,7 +1636,7 @@ func (s *xlStorage) ReadFileStream(ctx context.Context, volume, path string, off
 	}
 
 	alignment := offset%xioutil.DirectioAlignSize == 0
-	if !alignment {
+	if !alignment || env.Get("MINIO_API_DISABLE_ODIRECT", config.EnableOff) == config.EnableOn {
 		if err = disk.DisableDirectIO(file); err != nil {
 			file.Close()
 			return nil, err
